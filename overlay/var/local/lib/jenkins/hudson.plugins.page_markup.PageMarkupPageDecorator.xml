@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson.plugins.page__markup.PageMarkupPageDecorator>
+  <helpRedirect/>
+  <headerHtmlFragment></headerHtmlFragment>
+  <footerHtmlFragment>&lt;!-- Support TurnKey by adding credit to footer --&gt;
+&lt;style type=&apos;text/css&apos;&gt;
+#turnkey-credit {font-family: Tahoma,Sans,Arial,Helvetica,Verdana,sans-serif;font-size: 10px;text-align: center;}
+#turnkey-credit a {text-decoration: none;}
+#turnkey-credit a:hover {text-decoration: underline;}
+&lt;/style&gt;
+&lt;div id=&quot;turnkey-credit&quot;&gt;
+&lt;a href=&apos;http://www.turnkeylinux.org/jenkins&apos;&gt;Jenkins Appliance&lt;/a&gt; - Powered by &lt;a href=&apos;http://www.turnkeylinux.org&apos;&gt;TurnKey Linux&lt;/a&gt;
+&lt;/div&gt;
+</footerHtmlFragment>
+</hudson.plugins.page__markup.PageMarkupPageDecorator>
