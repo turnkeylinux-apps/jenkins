@@ -1,0 +1,8 @@
+#!/bin/bash -e
+# set jenkins admin password and email
+
+. /etc/default/inithooks
+
+[ -e $INITHOOKS_CONF ] && . $INITHOOKS_CONF
+$INITHOOKS_PATH/bin/jenkins.py --pass="$APP_PASS" --email="$APP_EMAIL"
+
