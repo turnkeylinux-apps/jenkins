@@ -11,5 +11,6 @@ mv $SRC/jenkins-*.war $WEBAPPS/jenkins.war
 # configure jenkins home
 chown -R tomcat6:tomcat6 $JHOME
 echo "export JENKINS_HOME=$JHOME" >> /etc/environment
+echo "JENKINS_HOME=$JHOME" >> /etc/default/tomcat6
 sed -i "s|CATALINA_OPTS=\"|CATALINA_OPTS=\"-DJENKINS_HOME=$JHOME |" /etc/environment
 
