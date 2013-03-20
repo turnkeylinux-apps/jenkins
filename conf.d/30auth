@@ -1,0 +1,16 @@
+#!/bin/bash -ex
+
+ADMIN_USER=admin
+ADMIN_PASS=turnkey
+
+SRC=/usr/local/src
+JENKINS_LIB=/var/lib/jenkins
+
+# configure pam based authentication
+adduser jenkins shadow
+mv $SRC/config.xml $JENKINS_LIB/config.xml
+
+# create admin user
+adduser --disabled-login --gecos 'jenkins admin' $ADMIN_USER
+echo $ADMIN_USER:$ADMIN_PASS | chpasswd
+
