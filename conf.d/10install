@@ -1,0 +1,27 @@
+#!/bin/bash -ex
+
+URL="http://pkg.jenkins-ci.org/debian"
+NAME="jenkins"
+
+wget -q -O - $URL/jenkins-ci.org.key | apt-key add -
+
+cat >/etc/apt/sources.list.d/$NAME.list<<EOF
+deb $URL binary/
+EOF
+
+cat >/etc/apt/preferences.d/$NAME<<EOF
+Package: *
+Pin: release o=jenkins-ci.org
+Pin-Priority: 100
+
+Package: $NAME
+Pin: release o=jenkins-ci.org
+Pin-Priority: 500
+EOF
+
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get --force-yes --assume-yes install $NAME
+
+sleep 5
+/etc/init.d/jenkins stop
+
