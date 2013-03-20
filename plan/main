@@ -1,7 +1,9 @@
 #include <turnkey/base>
 
-ant
+apache2
+webmin-apache
 
+ant
 openjdk-6-jdk
 openjdk-6-jre
 
