@@ -13,16 +13,16 @@ mkdir -p $PLUGINS_DIR
 
 for plugin in $PLUGINS; do
     dl https://updates.jenkins-ci.org/latest/${plugin}.hpi $PLUGINS_DIR
-    chown jenkins:nogroup $PLUGINS_DIR/${plugin}.hpi
 done
 
 mv $SRC/page-markup.jpi $PLUGINS_DIR
-chown jenkins:nogroup $PLUGINS_DIR/page-markup.jpi
 mv $SRC/hudson.plugins.page_markup.PageMarkupPageDecorator.xml /var/lib/jenkins
-chown jenkins:nogroup /var/lib/jenkins/*.xml
 
 # disable cvs plugin (subsystem not included ootb)
 if [ -e $PLUGINS_DIR/cvs.jpi ]; then
     mv $PLUGINS_DIR/cvs.jpi $PLUGINS_DIR/cvs.jpi.disabled
 fi
+
+chown -R jenkins:nogroup $PLUGINS_DIR
+chown jenkins:nogroup /var/lib/jenkins/*.xml
 
