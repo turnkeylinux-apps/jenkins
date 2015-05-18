@@ -4,6 +4,6 @@ a2enmod proxy
 a2enmod proxy_http
 a2enmod vhost_alias
 
-a2dissite default
+a2dissite 000-default
 a2ensite jenkins
 
