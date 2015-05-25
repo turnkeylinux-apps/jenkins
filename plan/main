@@ -4,8 +4,8 @@ apache2
 webmin-apache
 
 ant
-openjdk-6-jdk
-openjdk-6-jre
+openjdk-7-jdk
+openjdk-7-jre
 
 postfix
 webmin-postfix

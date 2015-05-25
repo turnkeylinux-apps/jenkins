@@ -1,3 +1,24 @@
+turnkey-jenkins-14.0 (1) turnkey; urgency=low
+
+  * Jenkins:
+
+    - Latest version of Jenkins from official package repository.
+
+  * Tomcat/JDK:
+
+    - Upgraded to Tomcat7 (Jessie).
+    - Upgraded to OpenJDK7 (Jessie).
+
+  * Debian component versions:
+
+    tomcat7             7.0.56-3
+    openjdk-7-jdk       7u79-2.5.5-1~deb8u1
+
+  * Note: Please refer to turnkey-core's changelog for changes common to all
+    appliances. Here we only describe changes specific to this appliance.
+
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Sun, 24 May 2015 04:37:32 +1000
+
 turnkey-jenkins-13.0 (1) turnkey; urgency=low
 
   * Jenkins:
