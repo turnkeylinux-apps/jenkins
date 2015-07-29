@@ -7,9 +7,6 @@ ant
 openjdk-7-jdk
 openjdk-7-jre
 
-postfix
-webmin-postfix
-
 build-essential
 git-core
 bzr
