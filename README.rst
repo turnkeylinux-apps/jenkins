@@ -31,4 +31,4 @@ Credentials *(passwords set at first boot)*
 
 
 .. _Jenkins: http://jenkins-ci.org/
-.. _TurnKey Core: http://www.turnkeylinux.org/core
+.. _TurnKey Core: https://www.turnkeylinux.org/core
