@@ -9,7 +9,7 @@
 #turnkey-credit a:hover {text-decoration: underline;}
 &lt;/style&gt;
 &lt;div id=&quot;turnkey-credit&quot;&gt;
-&lt;a href=&apos;http://www.turnkeylinux.org/jenkins&apos;&gt;Jenkins Appliance&lt;/a&gt; - Powered by &lt;a href=&apos;http://www.turnkeylinux.org&apos;&gt;TurnKey Linux&lt;/a&gt;
+&lt;a href=&apos;https://www.turnkeylinux.org/jenkins&apos;&gt;Jenkins Appliance&lt;/a&gt; - Powered by &lt;a href=&apos;https://www.turnkeylinux.org&apos;&gt;TurnKey Linux&lt;/a&gt;
 &lt;/div&gt;
 </footerHtmlFragment>
 </hudson.plugins.page__markup.PageMarkupPageDecorator>
