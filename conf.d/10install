@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 
-URL="http://pkg.jenkins-ci.org/debian"
+URL="http://pkg.jenkins-ci.org/debian-stable"
 NAME="jenkins"
 
 wget -q -O - $URL/jenkins-ci.org.key | apt-key add -
