@@ -11,8 +11,14 @@ This appliance includes all the standard features in `TurnKey Core`_,
 and on top of that:
 
 - Jenkins configurations:
-   
-   - Installed from upstream Debian archive.
+
+   - Jenkins is installed from the `Long Term Support`_ package
+     repository managed directly by the Jenkins project. 
+     
+     **Security note**: Updates to Jenkins may require supervision so
+     they **ARE NOT** configured to install automatically. See below for
+     updating Jenkins.
+
    - Jenkins is preconfigured to use PAM authentication.
    - Includes all popular VCS clients and related Jenkins plugins for
      Git, Bazaar, Mercurial and Subversion.
@@ -23,12 +29,23 @@ and on top of that:
   password recovery).
 - Webmin modules for configuring Apache and Postfix.
 
+Supervised Manual Jenkins Update
+--------------------------------
+
+To upgrade to the latest version of Jenkins from the command line::
+
+    apt-get update
+    apt-get install jenkins
+
+We recommend subscribing to the `Jenkins Security Advisories`_ mailing list 
+
 Credentials *(passwords set at first boot)*
 -------------------------------------------
 
 -  Webmin, SSH, MySQL, Adminer: username **root**
 -  Jenkins: default username is email set at first boot
 
-
+.. _Jenkins Security Advisories: https://groups.google.com/forum/#!forum/jenkinsci-advisories
+.. _Long Term Support: http://pkg.jenkins-ci.org/debian-stable/
 .. _Jenkins: http://jenkins-ci.org/
 .. _TurnKey Core: https://www.turnkeylinux.org/core
