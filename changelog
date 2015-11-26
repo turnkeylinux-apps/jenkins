@@ -1,3 +1,10 @@
+turnkey-jenkins-14.0 (2) turnkey; urgency=low
+
+  * Latest version of Jenkins from Long Term Support release version. Fixes
+    remote code execution vulnerability.
+
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Thu, 26 Nov 2015 19:28:32 +1000
+
 turnkey-jenkins-14.0 (1) turnkey; urgency=low
 
   * Jenkins:
