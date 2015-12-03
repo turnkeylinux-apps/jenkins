@@ -7,7 +7,7 @@ dl() {
 
 SRC=/usr/local/src
 
-PLUGINS="git git-client bazaar mercurial"
+PLUGINS="scm-api git git-client bazaar mercurial"
 PLUGINS_DIR="/var/lib/jenkins/plugins"
 mkdir -p $PLUGINS_DIR
 
