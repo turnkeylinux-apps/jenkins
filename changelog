@@ -1,3 +1,19 @@
+turnkey-jenkins-14.1 (1) turnkey; urgency=low
+
+  * Jenkins:
+
+    -Latest version of Jenkins from upstream Long Term Support repo.
+    -Included scm_api dependency (#507).
+    -Fix reverse proxy (#untracked bug).
+    -Redirect HTTP to HTTPS.
+
+  * Latest versions of Debian packages (from repos).
+
+  * Note: Please refer to turnkey-core's changelog for changes common to all
+    appliances. Here we only describe changes specific to this appliance.
+
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Wed, 17 Feb 2016 16:33:08 +1100
+
 turnkey-jenkins-14.0 (2) turnkey; urgency=low
 
   * Latest version of Jenkins from Long Term Support release version. Fixes
