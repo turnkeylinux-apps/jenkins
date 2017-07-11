@@ -3,10 +3,6 @@
 apache2
 webmin-apache
 
-ant
-openjdk-7-jdk
-openjdk-7-jre
-
 build-essential
 git-core
 bzr
