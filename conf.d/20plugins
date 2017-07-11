@@ -7,7 +7,7 @@ dl() {
 
 SRC=/usr/local/src
 
-PLUGINS="scm-api git git-client bazaar mercurial"
+PLUGINS="scm-api git git-client bazaar mercurial pam-auth"
 PLUGINS_DIR="/var/lib/jenkins/plugins"
 mkdir -p $PLUGINS_DIR
 
@@ -26,3 +26,5 @@ fi
 chown -R jenkins:nogroup $PLUGINS_DIR
 chown jenkins:nogroup /var/lib/jenkins/*.xml
 
+# skip setup wizard
+echo -n '2.0' >> /var/lib/jenkins/jenkins.install.InstallUtil.lastExecVersion
