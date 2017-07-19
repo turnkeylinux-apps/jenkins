@@ -4,6 +4,14 @@ turnkey-jenkins-14.2 (1) turnkey; urgency=low
 
   * Upgraded to OpenJDK v8.
 
+  * jenkins-cli:
+
+    - '-remoter' mode disabled by default (security) 
+    - JENKINS_URL env var set to http://localhost:8080 (convenience)
+    - jenkins-cli bash wrapper - can now use 'jenkins-cli' instead of
+      'java -jar path/to/jenkins-cli.jar' (convenience)
+    [jeremy@turnkeylinux.org]
+
   * Note: Please refer to turnkey-core's changelog for changes common to all
     appliances. Here we only describe changes specific to this appliance.
 
