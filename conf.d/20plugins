@@ -7,7 +7,7 @@ dl() {
 
 SRC=/usr/local/src
 
-PLUGINS="scm-api structs git workflow-step-api workflow-scm-step credentials git-client ssh-credentials bazaar mercurial matrix-project pam-auth junit script-security mailer display-url-api"
+PLUGINS="jsch apache-httpcomponents-client-4-api workflow-api scm-api structs git workflow-step-api workflow-scm-step credentials git-client ssh-credentials bazaar mercurial matrix-project pam-auth junit script-security mailer display-url-api"
 PLUGINS_DIR="/var/lib/jenkins/plugins"
 mkdir -p $PLUGINS_DIR
 

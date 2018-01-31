@@ -30,5 +30,5 @@ for i in openjdk-8-jdk ant $NAME; do
 done
 
 sleep 5
-/etc/init.d/jenkins stop
+service jenkins stop
 
