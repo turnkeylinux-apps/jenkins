@@ -3,10 +3,11 @@
 URL="http://pkg.jenkins-ci.org/debian-stable"
 NAME="jenkins"
 
-wget -q -O - $URL/jenkins-ci.org.key | apt-key add -
+mkdir -p /usr/share/keyrings
+wget -q -O - $URL/jenkins-ci.org.key | gpg --dearmor > /usr/share/keyrings/jenkins.gpg
 
 cat >/etc/apt/sources.list.d/$NAME.list<<EOF
-deb $URL binary/
+deb [signed-by=/usr/share/keyrings/jenkins.gpg] $URL binary/
 EOF
 
 cat >/etc/apt/preferences.d/$NAME<<EOF
