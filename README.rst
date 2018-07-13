@@ -23,6 +23,8 @@ and on top of that:
    - Includes all popular VCS clients and related Jenkins plugins for
      Git, Bazaar, Mercurial and Subversion.
    - JENKINS\_HOME configured in environment: /var/local/lib/jenkins.
+   - jenkins-cli bash wrapper script - can now use 'jenkins-cli' instead of
+     'java -jar path/to/jenkins-cli.jar' (convenience).
 
 - SSL support out of the box.
 - Includes postfix MTA (bound to localhost) for sending of email (e.g.
@@ -42,7 +44,7 @@ We recommend subscribing to the `Jenkins Security Advisories`_ mailing list
 Credentials *(passwords set at first boot)*
 -------------------------------------------
 
--  Webmin, SSH, MySQL, Adminer: username **root**
+-  Webmin, SSH, MySQL: username **root**
 -  Jenkins: default username is email set at first boot
 
 .. _Jenkins Security Advisories: https://groups.google.com/forum/#!forum/jenkinsci-advisories
