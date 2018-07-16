@@ -22,9 +22,7 @@ EOF
 
 apt-get -y update
 
-for i in openjdk-8-jdk ant $NAME; do
-    DEBIAN_FRONTEND=noninteractive apt-get --force-yes --assume-yes install $i
-done
+DEBIAN_FRONTEND=noninteractive apt-get --force-yes --assume-yes install $NAME
 
 sleep 5
 service jenkins stop
