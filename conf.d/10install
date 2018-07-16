@@ -22,7 +22,7 @@ EOF
 
 apt-get -y update
 
-DEBIAN_FRONTEND=noninteractive apt-get --force-yes --assume-yes install $NAME
+DEBIAN_FRONTEND=noninteractive apt-get --assume-yes install $NAME
 
 sleep 5
 service jenkins stop
