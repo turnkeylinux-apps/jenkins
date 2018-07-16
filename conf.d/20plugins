@@ -7,6 +7,7 @@ dl() {
 
 SRC=/usr/local/src
 
+# non-default lugins to install or default plugins to update
 PLUGINS="
 jsch
 apache-httpcomponents-client-4-api
@@ -25,6 +26,9 @@ junit
 script-security
 mailer
 display-url-api
+bouncycastle-api
+command-launcher
+jdk-tool
 "
 PLUGINS_DIR="/var/lib/jenkins/plugins"
 mkdir -p $PLUGINS_DIR
