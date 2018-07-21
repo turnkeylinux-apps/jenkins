@@ -7,7 +7,7 @@ dl() {
 
 SRC=/usr/local/src
 
-# non-default lugins to install or default plugins to update
+# non-default plugins to install and/or default plugins to update
 PLUGINS="
 jsch
 apache-httpcomponents-client-4-api
@@ -49,6 +49,6 @@ chown -R jenkins:nogroup $PLUGINS_DIR
 chown jenkins:nogroup /var/lib/jenkins/*.xml
 
 # skip setup wizard
-JENKINS_VER=$(java -jar /usr/share/jenkins/jenkins.war --version)A
+JENKINS_VER=$(java -jar /usr/share/jenkins/jenkins.war --version)
 echo -n "$JENKINS_VER" > /var/lib/jenkins/jenkins.install.UpgradeWizard.state
 echo -n "$JENKINS_VER" > /var/lib/jenkins/jenkins.install.InstallUtil.lastExecVersion
