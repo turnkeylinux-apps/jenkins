@@ -1,6 +1,6 @@
 turnkey-jenkins-15.0 (1) turnkey; urgency=low
 
-  * Latest version of Jenkins from upstream Long Term Support repo.
+  * Latest version of Jenkins from upstream Long Term Support repo (2.121.1).
 
   * Replace MySQL with MariaDB
 
