@@ -7,7 +7,29 @@ dl() {
 
 SRC=/usr/local/src
 
-PLUGINS="jsch apache-httpcomponents-client-4-api workflow-api scm-api structs git workflow-step-api workflow-scm-step credentials git-client ssh-credentials bazaar mercurial matrix-project pam-auth junit script-security mailer display-url-api"
+# non-default plugins to install and/or default plugins to update
+PLUGINS="
+jsch
+apache-httpcomponents-client-4-api
+workflow-api
+scm-api
+structs
+git
+workflow-step-api
+workflow-scm-step
+credentials
+git-client
+ssh-credentials
+matrix-project
+pam-auth
+junit
+script-security
+mailer
+display-url-api
+bouncycastle-api
+command-launcher
+jdk-tool
+"
 PLUGINS_DIR="/var/lib/jenkins/plugins"
 mkdir -p $PLUGINS_DIR
 
@@ -27,4 +49,6 @@ chown -R jenkins:nogroup $PLUGINS_DIR
 chown jenkins:nogroup /var/lib/jenkins/*.xml
 
 # skip setup wizard
-echo -n '2.0' >> /var/lib/jenkins/jenkins.install.InstallUtil.lastExecVersion
+JENKINS_VER=$(java -jar /usr/share/jenkins/jenkins.war --version)
+echo -n "$JENKINS_VER" > /var/lib/jenkins/jenkins.install.UpgradeWizard.state
+echo -n "$JENKINS_VER" > /var/lib/jenkins/jenkins.install.InstallUtil.lastExecVersion

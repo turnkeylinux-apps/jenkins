@@ -18,17 +18,11 @@ Pin-Priority: 100
 Package: $NAME
 Pin: release o=jenkins-ci.org
 Pin-Priority: 500
-
-Package: ca-certificates-java
-Pin: release a=jessie-backports
-Pin-Priority: 500
 EOF
 
 apt-get -y update
 
-for i in openjdk-8-jdk ant $NAME; do
-    DEBIAN_FRONTEND=noninteractive apt-get --force-yes --assume-yes install $i
-done
+DEBIAN_FRONTEND=noninteractive apt-get --assume-yes install $NAME
 
 sleep 5
 service jenkins stop

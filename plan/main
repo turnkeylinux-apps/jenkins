@@ -3,10 +3,9 @@
 apache2
 webmin-apache
 
+ant
+openjdk-8-jdk
+
 build-essential
 git-core
-bzr
-python-paramiko     /* bzr ssh support for push, pull */
-mercurial
 subversion
-
