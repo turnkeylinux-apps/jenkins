@@ -1,6 +1,12 @@
+turnkey-jenkins-15.1 (1) turnkey; urgency=low
+
+  * Latest version of Jenkins from upstream LTS repo (2.138.1).
+
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Mon, 17 Sep 2018 14:11:40 +1000
+
 turnkey-jenkins-15.0 (1) turnkey; urgency=low
 
-  * Latest version of Jenkins from upstream Long Term Support repo (2.121.2).
+  * Latest version of Jenkins from upstream Long Term Support repo (2.121.3).
 
   * Replace MySQL with MariaDB
 
