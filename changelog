@@ -1,3 +1,9 @@
+turnkey-jenkins-15.2 (1) turnkey; urgency=low
+
+  * Latest version of Jenkins from upstream LTS repo (2.138.2).
+
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Mon, 15 Oct 2018 18:40:16 +1100
+
 turnkey-jenkins-15.1 (1) turnkey; urgency=low
 
   * Latest version of Jenkins from upstream LTS repo (2.138.1).
