@@ -1,3 +1,10 @@
+turnkey-jenkins-15.3 (1) turnkey; urgency=low
+
+  * Rebuild to resolve inadvertant removal of mariadb during sec-updates
+    - part of #1246. 
+
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Wed, 21 Nov 2018 18:20:15 +1100
+
 turnkey-jenkins-15.2 (1) turnkey; urgency=low
 
   * Latest version of Jenkins from upstream LTS repo (2.138.2).
