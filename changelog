@@ -1,5 +1,7 @@
 turnkey-jenkins-15.3 (1) turnkey; urgency=low
 
+  * Install latest Jenkins LTS from upstream (2.138.3).
+
   * Rebuild to resolve inadvertant removal of mariadb during sec-updates
     - part of #1246. 
 
