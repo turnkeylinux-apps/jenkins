@@ -34,12 +34,14 @@ and on top of that:
 Supervised Manual Jenkins Update
 --------------------------------
 
-To upgrade to the latest version of Jenkins from the command line::
+Before upgrading it is recommended that you consult the relevant `upgrade
+guide`_. Once satisfied, you can upgrade to the latest version of Jenkins
+from the command line::
 
     apt-get update
     apt-get install jenkins
 
-We recommend subscribing to the `Jenkins Security Advisories`_ mailing list 
+We recommend subscribing to the `Jenkins Security Advisories`_ mailing list.
 
 Credentials *(passwords set at first boot)*
 -------------------------------------------
@@ -47,7 +49,8 @@ Credentials *(passwords set at first boot)*
 -  Webmin, SSH, MySQL: username **root**
 -  Jenkins: default username is email set at first boot
 
-.. _Jenkins Security Advisories: https://groups.google.com/forum/#!forum/jenkinsci-advisories
-.. _Long Term Support: http://pkg.jenkins-ci.org/debian-stable/
 .. _Jenkins: http://jenkins-ci.org/
 .. _TurnKey Core: https://www.turnkeylinux.org/core
+.. _Long Term Support: http://pkg.jenkins-ci.org/debian-stable/
+.. _upgrade guide: https://jenkins.io/doc/upgrade-guide/
+.. _Jenkins Security Advisories: https://groups.google.com/forum/#!forum/jenkinsci-advisories

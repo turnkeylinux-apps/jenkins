@@ -1,3 +1,9 @@
+turnkey-jenkins-15.4 (1) turnkey; urgency=low
+
+  * Install latest Jenkins LTS from upstream (2.150.1).
+
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Mon, 17 Dec 2018 12:53:51 +1100
+
 turnkey-jenkins-15.3 (1) turnkey; urgency=low
 
   * Install latest Jenkins LTS from upstream (2.138.3).
