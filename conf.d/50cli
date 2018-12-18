@@ -2,7 +2,7 @@
 
 # set cli for easy local use
 
-JENKINS_PATH=/var/lib/jenkins
+JENKINS_HOME=/var/lib/jenkins
 CLI_PATH=/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar
 
 cat > /usr/local/bin/jenkins-cli <<EOF
@@ -16,14 +16,14 @@ chmod +x /usr/local/bin/jenkins-cli
 
 cat > /root/.bashrc.d/jenkins <<EOF
 export JENKINS_URL=http://localhost:8080
-
+export JENKINS_HOME=$JENKINS_HOME
 EOF
 
 chmod +x /root/.bashrc.d/jenkins
 
 # disable -remoting mode (security)
 
-cat > $JENKINS_PATH/jenkins.CLI.xml <<EOF
+cat > $JENKINS_HOME/jenkins.CLI.xml <<EOF
 <?xml version='1.0' encoding='UTF-8'?>
 <jenkins.CLI>
   <enabled>false</enabled>

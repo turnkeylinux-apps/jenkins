@@ -22,7 +22,7 @@ and on top of that:
    - Jenkins is preconfigured to use PAM authentication.
    - Includes all popular VCS clients and related Jenkins plugins for
      Git, Bazaar, Mercurial and Subversion.
-   - JENKINS\_HOME configured in environment: /var/local/lib/jenkins.
+   - JENKINS\_HOME configured in environment: /var/lib/jenkins.
    - jenkins-cli bash wrapper script - can now use 'jenkins-cli' instead of
      'java -jar path/to/jenkins-cli.jar' (convenience).
 
