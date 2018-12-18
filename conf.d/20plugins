@@ -37,9 +37,6 @@ for plugin in $PLUGINS; do
     dl https://updates.jenkins-ci.org/latest/${plugin}.hpi $PLUGINS_DIR
 done
 
-mv $SRC/page-markup.jpi $PLUGINS_DIR
-mv $SRC/hudson.plugins.page_markup.PageMarkupPageDecorator.xml /var/lib/jenkins
-
 # disable cvs plugin (subsystem not included ootb)
 if [ -e $PLUGINS_DIR/cvs.jpi ]; then
     mv $PLUGINS_DIR/cvs.jpi $PLUGINS_DIR/cvs.jpi.disabled
