@@ -2,7 +2,11 @@ turnkey-jenkins-15.4 (1) turnkey; urgency=low
 
   * Install latest Jenkins LTS from upstream (2.150.1).
 
- -- Jeremy Davis <jeremy@turnkeylinux.org>  Mon, 17 Dec 2018 12:53:51 +1100
+  * Remove broken TurnKey credit footer (and the markup plugin that was
+    providing it) - closes #1215. To be reimplemented at a later date (see
+    #1281).
+
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Wed, 19 Dec 2018 10:12:50 +1100
 
 turnkey-jenkins-15.3 (1) turnkey; urgency=low
 
