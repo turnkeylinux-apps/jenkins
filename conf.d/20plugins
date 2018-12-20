@@ -43,7 +43,6 @@ if [ -e $PLUGINS_DIR/cvs.jpi ]; then
 fi
 
 chown -R jenkins:nogroup $PLUGINS_DIR
-chown jenkins:nogroup /var/lib/jenkins/*.xml
 
 # skip setup wizard
 JENKINS_VER=$(java -jar /usr/share/jenkins/jenkins.war --version)
