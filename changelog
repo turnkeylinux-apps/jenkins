@@ -1,3 +1,12 @@
+turnkey-jenkins-16.0 (1) turnkey; urgency=low
+
+  * Install latest Jenkins LTS from upstream (2.235.2).
+
+  * Note: Please refer to turnkey-core's changelog for changes common to all
+    appliances. Here we only describe changes specific to this appliance.
+
+ -- Stefan Davis <stefan@turnkeylinux.org>  Thu, 23 Jul 2020 04:10:50 +1000
+
 turnkey-jenkins-15.4 (1) turnkey; urgency=low
 
   * Install latest Jenkins LTS from upstream (2.150.1).
