@@ -47,7 +47,7 @@ Credentials *(passwords set at first boot)*
 -------------------------------------------
 
 -  Webmin, SSH, MySQL: username **root**
--  Jenkins: default username is email set at first boot
+-  Jenkins: username **jenkins-admin**
 
 .. _Jenkins: http://jenkins-ci.org/
 .. _TurnKey Core: https://www.turnkeylinux.org/core

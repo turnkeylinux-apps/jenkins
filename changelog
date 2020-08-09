@@ -1,6 +1,20 @@
 turnkey-jenkins-16.0 (1) turnkey; urgency=low
 
-  * Install latest Jenkins LTS from upstream - 2.235.2.A
+  * Install latest Jenkins LTS from upstream - 2.235.2.
+
+  * Update/include additional plugins (new/updated plugin dependencies):
+
+    - echarts-api
+    - jaxb
+    - trilead-api
+    - jackson2-api
+    - jquery3-api
+    - plugin-util-api
+    - snakeyaml-api
+
+  * Change default Jenkins username to 'jenkins-admin'. This is to avoid
+    possible clash with sudoadmin on AWSMP (default username is 'admin').
+    [ Jeremy Daivs <jeremy@turnkeylinux.org> ]
 
   * Explcitly disable TLS<1.2 (i.e. SSLv3, TLSv1, TLSv1.1). (v15.x
     TurnKey releases supported TLS 1.2, but could fallback as low as TLSv1).
