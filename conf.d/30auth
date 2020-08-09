@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 
-ADMIN_USER=admin
+ADMIN_USER=jenkins-admin
 ADMIN_PASS=turnkey
 
 SRC=/usr/local/src
@@ -10,7 +10,8 @@ JENKINS_LIB=/var/lib/jenkins
 adduser jenkins shadow
 mv $SRC/config.xml $JENKINS_LIB/config.xml
 
-# create admin user
+# create Jenkins admin user
 adduser --disabled-login --gecos 'jenkins admin' $ADMIN_USER
 echo $ADMIN_USER:$ADMIN_PASS | chpasswd
-
+# For some reason user account was being expired?!
+usermod --shell /sbin/nologin $ADMIN_USER

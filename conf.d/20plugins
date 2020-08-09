@@ -29,6 +29,13 @@ display-url-api
 bouncycastle-api
 command-launcher
 jdk-tool
+echarts-api
+jaxb
+trilead-api
+jackson2-api
+jquery3-api
+plugin-util-api
+snakeyaml-api
 "
 PLUGINS_DIR="/var/lib/jenkins/plugins"
 mkdir -p $PLUGINS_DIR
