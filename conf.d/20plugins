@@ -16,7 +16,6 @@ popper-api
 workflow-support
 jsch
 apache-httpcomponents-client-4-api
-checks-api
 workflow-api
 scm-api
 structs
