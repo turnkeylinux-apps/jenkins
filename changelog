@@ -1,3 +1,18 @@
+turnkey-jenkins-17.0 (1) turnkey; urgency=low
+
+  * Install latest Jenkins LTS from upstream apt repo - 2.361.1.
+
+  * Fixes #888 (Automated plugin dependency fulfilment)
+
+  * Provides jenkins-cli utility script `/usr/local/bin/jenkins-cli`
+
+  * Updated all relevant Debian packages to Bullseye/11 versions
+
+  * Note: Please refer to turnkey-core's 17.0 changelog for changes common to all
+    appliances. Here we only describe changes specific to this appliance.
+
+ -- Stefan Davis <stefan@turnkeylinux.org>  Mon, 19 Sep 2022 19:34:49 +0000
+
 turnkey-jenkins-16.1 (1) turnkey; urgency=low
 
   * Install latest Jenkins LTS from upstream apt repo - 2.277.3.
@@ -236,4 +251,3 @@ turnkey-jenkins-12.0 (1) turnkey; urgency=low
     appliances. Here we only describe changes specific to this appliance.
 
  -- Alon Swartz <alon@turnkeylinux.org>  Wed, 01 Aug 2012 08:00:00 +0200
-
