@@ -1,0 +1,33 @@
+#!/bin/bash -ex
+
+dl() {
+    [ "$FAB_HTTP_PROXY" ] && PROXY="--proxy $FAB_HTTP_PROXY"
+    # forcing http1 because jenkins seems to cause lots of HTTP2 framing errors
+    cd $2; curl --http1.1 -L -f -O $PROXY $1; cd -
+}
+
+SRC=/usr/local/src
+
+# plugins specific to pam-auth (so we can install the other plugins via
+# cli-tool)
+PLUGINS="
+pam-auth
+javax-activation-api
+instance-identity
+bouncycastle-api
+javax-mail-api
+"
+PLUGINS_DIR="/var/lib/jenkins/plugins"
+mkdir -p $PLUGINS_DIR
+
+for plugin in $PLUGINS; do
+    if [[ "$plugin" == *"="* ]]; then
+        version=$(echo $plugin | cut -d= -f2)
+        plugin=$(echo $plugin | cut -d= -f1)
+        dl https://updates.jenkins.io/download/plugins/$plugin/$version/$plugin.hpi $PLUGINS_DIR
+    else
+        dl https://updates.jenkins-ci.org/latest/${plugin}.hpi $PLUGINS_DIR
+    fi
+done
+
+chown -R jenkins:nogroup $PLUGINS_DIR

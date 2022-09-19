@@ -2,13 +2,28 @@
 
 # set cli for easy local use
 
+service apache2 start
+service jenkins start
+
+CLI_PATH=/usr/local/share/jenkins/jenkins-cli.jar
+
+mkdir -p /usr/local/share/jenkins
+
+while true; do
+    curl -k -o "$CLI_PATH" 'https://localhost/jnlpJars/jenkins-cli.jar'
+    file "$CLI_PATH"
+    if file "$CLI_PATH" | grep JAR; then
+        break
+    fi
+    sleep 2
+done
+
 JENKINS_HOME=/var/lib/jenkins
-CLI_PATH=/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar
 
 cat > /usr/local/bin/jenkins-cli <<EOF
 #!/bin/bash -e
 
-java -jar $CLI_PATH $@
+java -jar $CLI_PATH \$@
 
 EOF
 
@@ -30,3 +45,5 @@ cat > $JENKINS_HOME/jenkins.CLI.xml <<EOF
 </jenkins.CLI>
 EOF
 
+service apache2 stop
+service jenkins stop

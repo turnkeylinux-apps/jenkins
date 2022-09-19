@@ -27,3 +27,4 @@ DEBIAN_FRONTEND=noninteractive apt-get --assume-yes install $NAME
 
 sleep 5
 service jenkins stop
+
