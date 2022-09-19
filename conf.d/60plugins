@@ -40,18 +40,7 @@ while true; do
     sleep 2
 done
 
-# Plugin notes:
-#   - latest ssh-credentials plugin requires newer version of Jenkins than LTS
-# Next this won't be required (hopefully/probably)...
-
 for plugin in $PLUGINS; do
-    #if [[ "$plugin" == *"="* ]]; then
-    #    version=$(echo $plugin | cut -d= -f2)
-    #    plugin=$(echo $plugin | cut -d= -f1)
-    #    #dl https://updates.jenkins.io/download/plugins/$plugin/$version/$plugin.hpi $PLUGINS_DIR
-    #else
-    #    #dl https://updates.jenkins-ci.org/latest/${plugin}.hpi $PLUGINS_DIR
-    #fi
     jenkins-cli -s http://localhost:8080/ -auth jenkins-admin:turnkey install-plugin "$plugin"
 done
 
