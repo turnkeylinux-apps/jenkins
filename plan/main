@@ -4,7 +4,7 @@ apache2
 webmin-apache
 
 ant
-openjdk-11-jdk
+openjdk-17-jdk
 
 build-essential
 git-core
