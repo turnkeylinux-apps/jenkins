@@ -1,0 +1,108 @@
+#!/bin/bash -ex
+
+NAME="jenkins"
+DOMAIN="$NAME.io"
+URL="https://pkg.$DOMAIN/debian"
+
+USER=admin
+PASS=turnkey
+
+mkdir -p /usr/share/keyrings
+wget -q -O /usr/share/keyrings/jenkins-keyring.asc "$URL/jenkins.io-2023.key"
+
+cat >/etc/apt/sources.list.d/$NAME.list<<EOF
+deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] $URL binary/
+EOF
+
+cat >/etc/apt/preferences.d/$NAME<<EOF
+Package: *
+Pin: release o=$DOMAIN
+Pin-Priority: 100
+
+Package: $NAME
+Pin: release o=$DOMAIN
+Pin-Priority: 500
+EOF
+
+apt-get -y update
+DEBIAN_FRONTEND=noninteractive apt-get -y install "$NAME"
+
+a2enmod proxy
+a2enmod proxy_http
+a2enmod headers
+a2enmod vhost_alias
+a2enmod rewrite
+
+a2dissite 000-default
+a2ensite jenkins
+
+# sed -i 's/^#\(LimitNOFILE\)/\1/' /etc/systemd/system/multi-user.target.wants/jenkins.service TODO
+
+service apache2 start
+service jenkins start
+
+CLI_PATH=/usr/local/share/jenkins/jenkins-cli.jar
+mkdir -p "$(dirname "$CLI_PATH")"
+
+while ! file "$CLI_PATH" | grep -q JAR; do
+    curl -k -o "$CLI_PATH" 'https://127.0.0.1/jnlpJars/jenkins-cli.jar'
+    sleep 3
+done
+
+cat > /usr/local/bin/jenkins-cli <<EOF
+#!/bin/sh
+exec java -jar $CLI_PATH \$@
+EOF
+
+chmod +x /usr/local/bin/jenkins-cli
+
+cat > /root/.bashrc.d/jenkins <<EOF
+export JENKINS_URL=http://localhost:8080
+export JENKINS_HOME=/var/lib/jenkins
+EOF
+
+chmod +x /root/.bashrc.d/jenkins
+. /root/.bashrc.d/jenkins
+
+COOKIES="$(mktemp)"
+PASSWORD="$(cat /var/lib/jenkins/secrets/initialAdminPassword)"
+
+jcurl() { curl -sb "$COOKIES" -c "$COOKIES" -u "admin:$PASSWORD" "$@"; }
+get_crumb() { jcurl "$JENKINS_URL/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,%22:%22,//crumb)" | cut -d: -f2; }
+jpost() { jcurl -X POST -H "Jenkins-Crumb: $(get_crumb)" "$@"; }
+
+jpost \
+    --data-urlencode "username=$USER" \
+    --data-urlencode "fullname=$USER" \
+    --data-urlencode "password1=$PASS" \
+    --data-urlencode "password2=$PASS" \
+    --data-urlencode "email=admin@example.com" \
+    "$JENKINS_URL/setupWizard/createAdminUser"
+
+PLUGINS="
+    workflow-support
+    jsch
+    scm-api
+    structs
+    git
+    workflow-scm-step
+    credentials
+    git-client
+    ssh-credentials
+    matrix-project
+    junit
+    script-security
+    mailer
+    command-launcher
+    jdk-tool
+    jaxb
+    credentials-binding
+"
+
+for plugin in $PLUGINS; do jenkins-cli -auth "$USER:$PASS" install-plugin "$plugin"; done
+jpost --data-urlencode "rootUrl=$JENKINS_URL" "$JENKINS_URL/setupWizard/configureInstance"
+
+service apache2 stop
+jenkins-cli -auth "$USER:$PASS" shutdown
+
+rm "$COOKIES"
