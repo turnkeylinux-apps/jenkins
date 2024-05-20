@@ -2,6 +2,8 @@ turnkey-jenkins-18.0 (1) turnkey; urgency=low
 
   * Install latest Jenkins LTS from upstream apt repo - 2.452.1.
 
+  * Update OpenJDK to openjdk-17-jre (Debian apt repo).
+
   * Confconsole: bugfix broken DNS-01 Let's Encrypt challenge- closes #1876 &
     #1895.
     [Jeremy Davis <jeremy@turnkeylinux.org>]
