@@ -4,6 +4,8 @@ turnkey-jenkins-18.0 (1) turnkey; urgency=low
 
   * Update OpenJDK to openjdk-17-jre (Debian apt repo).
 
+  * Include fontconfig pkg as manually installed pkg (Debian apt repo).
+
   * Confconsole: bugfix broken DNS-01 Let's Encrypt challenge- closes #1876 &
     #1895.
     [Jeremy Davis <jeremy@turnkeylinux.org>]
@@ -74,7 +76,8 @@ turnkey-jenkins-18.0 (1) turnkey; urgency=low
     - Enable new non-free-firmware apt repo by default.
     - Improve turnkey-artisan so that it works reliably in cron jobs (only
       Laravel based LAMP apps).
- -- Jeremy Davis <jeremy@turnkeylinux.org>  Mon, 20 May 2024 04:50:16 +0000
+
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Tue, 21 May 2024 00:42:45 +0000
 
 turnkey-jenkins-17.1 (1) turnkey; urgency=low
 
