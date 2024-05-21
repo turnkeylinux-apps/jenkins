@@ -5,7 +5,7 @@ URL="https://pkg.$DOMAIN/debian-stable"
 NAME="jenkins"
 
 mkdir -p /usr/share/keyrings
-wget -q -O - $URL/jenkins.io.key | gpg --dearmor > /usr/share/keyrings/jenkins.gpg
+wget -q -O - $URL/jenkins.io-2023.key | gpg --dearmor > /usr/share/keyrings/jenkins.gpg
 
 cat >/etc/apt/sources.list.d/$NAME.list<<EOF
 deb [signed-by=/usr/share/keyrings/jenkins.gpg] $URL binary/
