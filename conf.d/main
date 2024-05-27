@@ -36,8 +36,6 @@ a2enmod rewrite
 a2dissite 000-default
 a2ensite jenkins
 
-# sed -i 's/^#\(LimitNOFILE\)/\1/' /etc/systemd/system/multi-user.target.wants/jenkins.service TODO
-
 service apache2 start
 service jenkins start
 
@@ -105,4 +103,5 @@ jpost --data-urlencode "rootUrl=$JENKINS_URL" "$JENKINS_URL/setupWizard/configur
 service apache2 stop
 jenkins-cli -auth "$USER:$PASS" shutdown
 
+sed -i 's/^#\(LimitNOFILE\)/\1/' /etc/systemd/system/multi-user.target.wants/jenkins.service
 rm "$COOKIES"
