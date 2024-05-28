@@ -1,5 +1,12 @@
 turnkey-jenkins-18.0 (1) turnkey; urgency=low
 
+  * Install latest Jenkins LTS from upstream apt repo - 2.459
+    [Anton Pyrogovskyi <anton@turnkeylinux.org]
+
+  * No longer use PAM authentication by default, preferring Jenkins default
+    user management (PAM auth module is still installed and available)
+    [Anton Pyrogovskyi <anton@turnkeylinux.org]
+
   * Install latest Jenkins LTS from upstream apt repo - 2.452.1.
 
   * Update OpenJDK to openjdk-17-jre (Debian apt repo).
