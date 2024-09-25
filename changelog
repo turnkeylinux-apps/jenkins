@@ -1,3 +1,13 @@
+turnkey-jenkins-18.1 (1) turnkey; urgency=low
+
+  * Install latest Jenkins LTS from upstream apt repo - 2.462.2.
+
+  * v18.1 rebuild - includes latest Debian & TurnKey packages.
+
+  * Reduce log noise by creating ntpsec log dir - closes #1952.
+
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Sat, 14 Sep 2024 07:12:58 +0000
+
 turnkey-jenkins-18.0 (1) turnkey; urgency=low
 
   * Install latest Jenkins LTS from upstream apt repo - 2.459
