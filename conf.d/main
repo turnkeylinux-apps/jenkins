@@ -2,13 +2,24 @@
 
 NAME="jenkins"
 DOMAIN="$NAME.io"
-URL="https://pkg.$DOMAIN/debian"
+URL="https://pkg.$DOMAIN/debian-stable"
+VERSION=2.568.2
+PACKAGE_SHA256=abaa015c3a39a8182eed136333d6d0ba055564df37584e699cc9693ad64ad7d5
+KEY_URL="$URL/jenkins.io-2026.key"
+KEY_SHA256=d3b7e4096fed593eebdba3a2554c8cb9aafebe736910584e69e924b143e7b3d4
+KEY_FINGERPRINT=5E386EADB55F01504CAE8BCF7198F4B714ABFC68
+SOURCE_RECORD=/usr/local/share/turnkey-jenkins/source
 
 USER=admin
 PASS=turnkey
 
 mkdir -p /usr/share/keyrings
-wget -q -O /usr/share/keyrings/jenkins-keyring.asc "$URL/jenkins.io-2023.key"
+key=$(mktemp)
+trap 'find "$key" -maxdepth 0 -type f -delete' EXIT
+curl -fsSL "$KEY_URL" -o "$key"
+echo "$KEY_SHA256  $key" | sha256sum -c -
+test "$(gpg --show-keys --with-colons "$key" | awk -F: '$1 == "fpr" { print $10; exit }')" = "$KEY_FINGERPRINT"
+install -m 0644 "$key" /usr/share/keyrings/jenkins-keyring.asc
 
 cat >/etc/apt/sources.list.d/$NAME.list<<EOF
 deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] $URL binary/
@@ -25,7 +36,18 @@ Pin-Priority: 500
 EOF
 
 apt-get -y update
-DEBIAN_FRONTEND=noninteractive apt-get -y install "$NAME"
+DEBIAN_FRONTEND=noninteractive apt-get -y install "$NAME=$VERSION"
+test "$(dpkg-query -W -f='${Version}' jenkins)" = "$VERSION"
+
+mkdir -p "$(dirname "$SOURCE_RECORD")"
+cat >"$SOURCE_RECORD" <<EOF
+package_source=https://pkg.jenkins.io/debian-stable
+installed_version=$VERSION
+package_sha256=$PACKAGE_SHA256
+repository_key_fingerprint=$KEY_FINGERPRINT
+repository_key_sha256=$KEY_SHA256
+java_major=21
+EOF
 
 a2enmod proxy
 a2enmod proxy_http
@@ -42,14 +64,16 @@ service jenkins start
 CLI_PATH=/usr/local/share/jenkins/jenkins-cli.jar
 mkdir -p "$(dirname "$CLI_PATH")"
 
-while ! file "$CLI_PATH" | grep -q JAR; do
-    curl -k -o "$CLI_PATH" 'https://127.0.0.1/jnlpJars/jenkins-cli.jar'
+for attempt in {1..60}; do
+    curl -fk -o "$CLI_PATH" 'https://127.0.0.1/jnlpJars/jenkins-cli.jar' &&
+        file "$CLI_PATH" | grep -q JAR && break
     sleep 3
 done
+file "$CLI_PATH" | grep -q JAR
 
 cat > /usr/local/bin/jenkins-cli <<EOF
 #!/bin/sh
-exec java -jar $CLI_PATH \$@
+exec java -jar $CLI_PATH "\$@"
 EOF
 
 chmod +x /usr/local/bin/jenkins-cli
@@ -63,6 +87,7 @@ chmod +x /root/.bashrc.d/jenkins
 . /root/.bashrc.d/jenkins
 
 COOKIES="$(mktemp)"
+set +x
 PASSWORD="$(cat /var/lib/jenkins/secrets/initialAdminPassword)"
 
 jcurl() { curl -sb "$COOKIES" -c "$COOKIES" -u "admin:$PASSWORD" "$@"; }
@@ -83,6 +108,7 @@ PLUGINS="
     scm-api
     structs
     git
+    subversion
     workflow-scm-step
     credentials
     git-client
@@ -102,6 +128,7 @@ jpost --data-urlencode "rootUrl=$JENKINS_URL" "$JENKINS_URL/setupWizard/configur
 
 service apache2 stop
 jenkins-cli -auth "$USER:$PASS" shutdown
+set -x
 
 sed -i 's/^#\(LimitNOFILE\)/\1/' /etc/systemd/system/multi-user.target.wants/jenkins.service
-rm "$COOKIES"
+find "$COOKIES" -maxdepth 0 -type f -delete

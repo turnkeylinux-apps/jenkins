@@ -19,9 +19,8 @@ and on top of that:
      they **ARE NOT** configured to install automatically. See below for
      updating Jenkins.
 
-   - Jenkins is preconfigured to use PAM authentication.
-   - Includes all popular VCS clients and related Jenkins plugins for
-     Git, Bazaar, Mercurial and Subversion.
+   - Jenkins is preconfigured with its own administrator account.
+   - Includes Git and Subversion clients and their Jenkins plugins.
    - JENKINS\_HOME configured in environment: /var/lib/jenkins.
    - jenkins-cli bash wrapper script - can now use 'jenkins-cli' instead of
      'java -jar path/to/jenkins-cli.jar' (convenience).
@@ -34,23 +33,28 @@ and on top of that:
 Supervised Manual Jenkins Update
 --------------------------------
 
-Before upgrading it is recommended that you consult the relevant `upgrade
-guide`_. Once satisfied, you can upgrade to the latest version of Jenkins
-from the command line::
+Check the installed and eligible Jenkins LTS versions without changing the
+appliance::
+
+    jenkins-update --check
+
+Before upgrading, consult the relevant `upgrade guide`_, back up
+``JENKINS_HOME``, and review plugin compatibility. Install the selected LTS
+version explicitly::
 
     apt-get update
-    apt-get install jenkins
+    apt-get install jenkins=<version>
 
 We recommend subscribing to the `Jenkins Security Advisories`_ mailing list.
 
 Credentials *(passwords set at first boot)*
 -------------------------------------------
 
--  Webmin, SSH, MySQL: username **root**
--  Jenkins: username **jenkins-admin**
+-  Webmin, SSH: username **root**
+-  Jenkins: username **admin**
 
-.. _Jenkins: http://jenkins-ci.org/
+.. _Jenkins: https://www.jenkins.io/
 .. _TurnKey Core: https://www.turnkeylinux.org/core
-.. _Long Term Support: http://pkg.jenkins-ci.org/debian-stable/
-.. _upgrade guide: https://jenkins.io/doc/upgrade-guide/
+.. _Long Term Support: https://pkg.jenkins.io/debian-stable/
+.. _upgrade guide: https://www.jenkins.io/doc/upgrade-guide/
 .. _Jenkins Security Advisories: https://groups.google.com/forum/#!forum/jenkinsci-advisories
