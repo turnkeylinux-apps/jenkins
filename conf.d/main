@@ -66,10 +66,10 @@ mkdir -p "$(dirname "$CLI_PATH")"
 
 for attempt in {1..60}; do
     curl -fk -o "$CLI_PATH" 'https://127.0.0.1/jnlpJars/jenkins-cli.jar' &&
-        file "$CLI_PATH" | grep -q JAR && break
+        jar --list --file "$CLI_PATH" >/dev/null 2>&1 && break
     sleep 3
 done
-file "$CLI_PATH" | grep -q JAR
+jar --list --file "$CLI_PATH" >/dev/null
 
 cat > /usr/local/bin/jenkins-cli <<EOF
 #!/bin/sh
