@@ -58,9 +58,9 @@ test "$installed_version" = 2.568.2
 test "$(dpkg-query -W -f='${Version}' jenkins)" = "$installed_version"
 test "$package_sha256" = abaa015c3a39a8182eed136333d6d0ba055564df37584e699cc9693ad64ad7d5
 test "$(gpg --show-keys --with-colons /usr/share/keyrings/jenkins-keyring.asc |
-    awk -F: '$1 == "fpr" { print $10; exit }')" = \
+    awk -F: '$1 == "fpr" && !found { print $10; found = 1 }')" = \
     "$repository_key_fingerprint"
-java -version 2>&1 | grep -Eq 'version "21[.]'
+java -version 2>&1 | grep -E 'version "21[.]' >/dev/null
 git --version
 svn --version --quiet
 ant -version
@@ -69,8 +69,8 @@ jcurl https://127.0.0.1/api/json |
     jq -e '.mode == "NORMAL"' >/dev/null
 jcurl https://127.0.0.1/whoAmI/api/json |
     jq -e '.authenticated == true and .name == "admin"' >/dev/null
-jenkins-cli -s https://127.0.0.1 -noCertificateCheck version |
-    grep -Fxq "$installed_version"
+test "$(jenkins-cli -s https://127.0.0.1 -noCertificateCheck version)" = \
+    "$installed_version"
 
 for plugin in git subversion workflow-scm-step mailer junit; do
     [[ -f /var/lib/jenkins/plugins/$plugin.jpi ||
@@ -119,7 +119,7 @@ for attempt in {1..60}; do
 done
 test "$build_result" = SUCCESS
 jcurl "https://127.0.0.1/job/$fixture/lastBuild/consoleText" |
-    grep -Fq "$marker"
+    grep -F "$marker" >/dev/null
 
 systemctl restart jenkins.service
 for attempt in {1..60}; do
