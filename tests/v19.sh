@@ -10,6 +10,18 @@ marker="Jenkins-v19-build-$fixture"
 work=$(mktemp -d /tmp/jenkins-v19.XXXXXXXX)
 job_created=false
 
+json_field() {
+    python3 -c '
+import json
+import sys
+
+value = json.load(sys.stdin)[sys.argv[1]]
+if value is None or value is False:
+    raise SystemExit(1)
+print(value)
+' "$1"
+}
+
 cat >"$work/netrc" <<EOF
 machine 127.0.0.1 login admin password $app_password
 EOF
@@ -22,8 +34,8 @@ jcurl() {
 refresh_crumb() {
     local response
     response=$(jcurl https://127.0.0.1/crumbIssuer/api/json)
-    crumb_field=$(jq -er '.crumbRequestField' <<<"$response")
-    crumb=$(jq -er '.crumb' <<<"$response")
+    crumb_field=$(json_field crumbRequestField <<<"$response")
+    crumb=$(json_field crumb <<<"$response")
 }
 
 jpost() {
@@ -65,10 +77,10 @@ git --version
 svn --version --quiet
 ant -version
 
-jcurl https://127.0.0.1/api/json |
-    jq -e '.mode == "NORMAL"' >/dev/null
-jcurl https://127.0.0.1/whoAmI/api/json |
-    jq -e '.authenticated == true and .name == "admin"' >/dev/null
+test "$(jcurl https://127.0.0.1/api/json | json_field mode)" = NORMAL
+whoami=$(jcurl https://127.0.0.1/whoAmI/api/json)
+test "$(json_field authenticated <<<"$whoami")" = True
+test "$(json_field name <<<"$whoami")" = admin
 test "$(jenkins-cli -s https://127.0.0.1 -noCertificateCheck version)" = \
     "$installed_version"
 
@@ -112,7 +124,7 @@ build_result=
 for attempt in {1..60}; do
     if build=$(jcurl "https://127.0.0.1/job/$fixture/lastBuild/api/json" \
         2>/dev/null); then
-        build_result=$(jq -r '.result // empty' <<<"$build")
+        build_result=$(json_field result <<<"$build" 2>/dev/null || true)
         [[ -n $build_result ]] && break
     fi
     sleep 2
@@ -126,8 +138,8 @@ for attempt in {1..60}; do
     jcurl "https://127.0.0.1/job/$fixture/api/json" >/dev/null 2>&1 && break
     sleep 2
 done
-jcurl "https://127.0.0.1/job/$fixture/api/json" |
-    jq -e --arg name "$fixture" '.name == $name' >/dev/null
+test "$(jcurl "https://127.0.0.1/job/$fixture/api/json" |
+    json_field name)" = "$fixture"
 
 jenkins-update --check >"$work/update"
 candidate=$(sed -n 's/^candidate=//p' "$work/update")
