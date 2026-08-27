@@ -9,6 +9,8 @@ KEY_URL="$URL/jenkins.io-2026.key"
 KEY_SHA256=d3b7e4096fed593eebdba3a2554c8cb9aafebe736910584e69e924b143e7b3d4
 KEY_FINGERPRINT=5E386EADB55F01504CAE8BCF7198F4B714ABFC68
 SOURCE_RECORD=/usr/local/share/turnkey-jenkins/source
+PLUGIN_UPDATE_CENTER=https://mirror.freedif.org/jenkins/updates/dynamic-stable-2.568.2/update-center.actual.json
+CANONICAL_UPDATE_CENTER=https://updates.jenkins.io/update-center.json
 
 USER=admin
 PASS=turnkey
@@ -48,6 +50,24 @@ repository_key_fingerprint=$KEY_FINGERPRINT
 repository_key_sha256=$KEY_SHA256
 java_major=21
 EOF
+
+install -d -m 0755 /etc/systemd/system/jenkins.service.d
+cat >/etc/systemd/system/jenkins.service.d/timeout.conf <<'EOF'
+[Service]
+Environment="JAVA_OPTS=-Djava.awt.headless=true -Dsun.net.client.defaultConnectTimeout=15000 -Dsun.net.client.defaultReadTimeout=30000"
+EOF
+
+cat >/var/lib/jenkins/hudson.model.UpdateCenter.xml <<EOF
+<?xml version='1.1' encoding='UTF-8'?>
+<sites>
+  <site>
+    <id>default</id>
+    <url>$PLUGIN_UPDATE_CENTER</url>
+  </site>
+</sites>
+EOF
+chown jenkins:jenkins /var/lib/jenkins/hudson.model.UpdateCenter.xml
+systemctl daemon-reload
 
 a2enmod proxy
 a2enmod proxy_http
@@ -104,10 +124,14 @@ jpost \
 jpost --data-urlencode "rootUrl=$JENKINS_URL" "$JENKINS_URL/setupWizard/configureInstance"
 
 jenkins-cli -auth "$USER:$PASS" groovy = <<'EOF'
+import hudson.model.DownloadService
 import hudson.model.UpdateCenter
 import hudson.util.FormValidation
 import jenkins.model.Jenkins
 
+if (!DownloadService.signatureCheck) {
+    throw new IllegalStateException('Jenkins update-center signature checks are disabled')
+}
 def site = Jenkins.get().updateCenter.getSite(UpdateCenter.ID_DEFAULT)
 if (site == null) {
     throw new IllegalStateException('Jenkins default update center is unavailable')
@@ -116,6 +140,21 @@ def result = site.updateDirectlyNow()
 if (result.kind != FormValidation.Kind.OK ||
         site.getPlugin('workflow-support') == null) {
     throw new IllegalStateException('Jenkins update-center metadata is unavailable')
+}
+
+def requested = [
+    'workflow-support', 'jsch', 'scm-api', 'structs', 'git', 'subversion',
+    'workflow-scm-step', 'credentials', 'git-client', 'ssh-credentials',
+    'matrix-project', 'junit', 'script-security', 'mailer',
+    'command-launcher', 'jdk-tool', 'jaxb', 'credentials-binding'
+]
+def unsigned = requested.findAll { name ->
+    def plugin = site.getPlugin(name)
+    plugin == null || plugin.sha256 == null || plugin.sha256.isEmpty()
+}
+if (!unsigned.isEmpty()) {
+    throw new IllegalStateException(
+            "Jenkins plugins lack SHA-256 metadata: ${unsigned.join(', ')}")
 }
 EOF
 
@@ -142,9 +181,33 @@ PLUGINS="
 
 for plugin in $PLUGINS; do jenkins-cli -auth "$USER:$PASS" install-plugin "$plugin"; done
 
+jenkins-cli -auth "$USER:$PASS" groovy = <<'EOF'
+import hudson.model.UpdateCenter
+import hudson.model.UpdateSite
+import jenkins.model.Jenkins
+
+def sites = Jenkins.get().updateCenter.sites
+sites.clear()
+sites.add(new UpdateSite(UpdateCenter.ID_DEFAULT,
+        'https://updates.jenkins.io/update-center.json'))
+if (Jenkins.get().updateCenter.getSite(UpdateCenter.ID_DEFAULT).url !=
+        'https://updates.jenkins.io/update-center.json') {
+    throw new IllegalStateException('Canonical Jenkins update center was not restored')
+}
+EOF
+
 service apache2 stop
 jenkins-cli -auth "$USER:$PASS" shutdown
 set -x
+
+grep -Fq "<url>$CANONICAL_UPDATE_CENTER</url>" \
+    /var/lib/jenkins/hudson.model.UpdateCenter.xml
+find /etc/systemd/system/jenkins.service.d/timeout.conf \
+    -maxdepth 0 -type f -delete
+systemctl daemon-reload
+test ! -e /etc/systemd/system/jenkins.service.d/timeout.conf
+! systemctl show --property=Environment --value jenkins.service |
+    grep -q 'sun.net.client.default.*Timeout'
 
 sed -i 's/^#\(LimitNOFILE\)/\1/' /etc/systemd/system/multi-user.target.wants/jenkins.service
 find "$COOKIES" -maxdepth 0 -type f -delete

@@ -73,6 +73,11 @@ test "$package_sha256" = abaa015c3a39a8182eed136333d6d0ba055564df37584e699cc9693
 test "$(gpg --show-keys --with-colons /usr/share/keyrings/jenkins-keyring.asc |
     awk -F: '$1 == "fpr" && !found { print $10; found = 1 }')" = \
     "$repository_key_fingerprint"
+test ! -e /etc/systemd/system/jenkins.service.d/timeout.conf
+jenkins_environment=$(systemctl show --property=Environment --value jenkins.service)
+! grep -q 'sun.net.client.default.*Timeout' <<<"$jenkins_environment"
+grep -Fq '<url>https://updates.jenkins.io/update-center.json</url>' \
+    /var/lib/jenkins/hudson.model.UpdateCenter.xml
 java -version 2>&1 | grep -E 'version "21[.]' >/dev/null
 git --version
 svn --version --quiet
