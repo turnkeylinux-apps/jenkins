@@ -28,7 +28,8 @@ EOF
 
 jcurl() {
     curl --insecure --fail --silent --show-error \
-        --netrc-file "$work/netrc" "$@"
+        --netrc-file "$work/netrc" \
+        --cookie "$work/cookies" --cookie-jar "$work/cookies" "$@"
 }
 
 refresh_crumb() {
