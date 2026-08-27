@@ -86,8 +86,9 @@ test "$(jcurl https://127.0.0.1/api/json | json_field mode)" = NORMAL
 whoami=$(jcurl https://127.0.0.1/whoAmI/api/json)
 test "$(json_field authenticated <<<"$whoami")" = True
 test "$(json_field name <<<"$whoami")" = admin
-test "$(jenkins-cli -s https://127.0.0.1 -noCertificateCheck version)" = \
-    "$installed_version"
+# shellcheck source=/dev/null
+. /root/.bashrc.d/jenkins
+test "$(jenkins-cli -auth "admin:$app_password" version)" = "$installed_version"
 
 for plugin in git subversion workflow-scm-step mailer junit; do
     [[ -f /var/lib/jenkins/plugins/$plugin.jpi ||
