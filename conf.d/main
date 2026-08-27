@@ -64,7 +64,7 @@ service jenkins start
 CLI_PATH=/usr/local/share/jenkins/jenkins-cli.jar
 mkdir -p "$(dirname "$CLI_PATH")"
 
-for attempt in {1..60}; do
+for ((attempt = 1; attempt <= 60; attempt++)); do
     curl -fk -o "$CLI_PATH" 'https://127.0.0.1/jnlpJars/jenkins-cli.jar' &&
         jar --list --file "$CLI_PATH" >/dev/null 2>&1 && break
     sleep 3
