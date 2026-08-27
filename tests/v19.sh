@@ -51,6 +51,7 @@ cleanup() {
     find "$work" -depth -delete
 }
 trap cleanup EXIT
+trap 'printf "test_failure line=%s status=%s command=%q\n" "$LINENO" "$?" "$BASH_COMMAND" >&2' ERR
 
 for unit in apache2.service jenkins.service postfix.service; do
     systemctl --quiet is-active "$unit"
