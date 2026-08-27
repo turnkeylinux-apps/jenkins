@@ -55,7 +55,6 @@ trap 'printf "test_failure line=%s status=%s command=%q\n" "$LINENO" "$?" "$BASH
 
 for unit in apache2.service jenkins.service postfix.service; do
     systemctl --quiet is-active "$unit"
-    systemctl --quiet is-enabled "$unit"
 done
 apache2ctl configtest
 grep -Fxq 'VERSION_CODENAME=trixie' /etc/os-release

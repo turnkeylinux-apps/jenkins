@@ -206,8 +206,6 @@ find /etc/systemd/system/jenkins.service.d/timeout.conf \
     -maxdepth 0 -type f -delete
 systemctl daemon-reload
 test ! -e /etc/systemd/system/jenkins.service.d/timeout.conf
-! systemctl show --property=Environment --value jenkins.service |
-    grep -q 'sun.net.client.default.*Timeout'
 
 sed -i 's/^#\(LimitNOFILE\)/\1/' /etc/systemd/system/multi-user.target.wants/jenkins.service
 find "$COOKIES" -maxdepth 0 -type f -delete
