@@ -101,6 +101,7 @@ jpost \
     --data-urlencode "password2=$PASS" \
     --data-urlencode "email=admin@example.com" \
     "$JENKINS_URL/setupWizard/createAdminUser"
+jpost --data-urlencode "rootUrl=$JENKINS_URL" "$JENKINS_URL/setupWizard/configureInstance"
 
 PLUGINS="
     workflow-support
@@ -124,7 +125,6 @@ PLUGINS="
 "
 
 for plugin in $PLUGINS; do jenkins-cli -auth "$USER:$PASS" install-plugin "$plugin"; done
-jpost --data-urlencode "rootUrl=$JENKINS_URL" "$JENKINS_URL/setupWizard/configureInstance"
 
 service apache2 stop
 jenkins-cli -auth "$USER:$PASS" shutdown
