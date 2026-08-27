@@ -103,6 +103,22 @@ jpost \
     "$JENKINS_URL/setupWizard/createAdminUser"
 jpost --data-urlencode "rootUrl=$JENKINS_URL" "$JENKINS_URL/setupWizard/configureInstance"
 
+jenkins-cli -auth "$USER:$PASS" groovy = <<'EOF'
+import hudson.model.UpdateCenter
+import hudson.util.FormValidation
+import jenkins.model.Jenkins
+
+def site = Jenkins.get().updateCenter.getSite(UpdateCenter.ID_DEFAULT)
+if (site == null) {
+    throw new IllegalStateException('Jenkins default update center is unavailable')
+}
+def result = site.updateDirectlyNow()
+if (result.kind != FormValidation.Kind.OK ||
+        site.getPlugin('workflow-support') == null) {
+    throw new IllegalStateException('Jenkins update-center metadata is unavailable')
+}
+EOF
+
 PLUGINS="
     workflow-support
     jsch
