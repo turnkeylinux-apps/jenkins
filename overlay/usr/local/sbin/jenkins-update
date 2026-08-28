@@ -1,0 +1,43 @@
+#!/bin/bash
+set -Eeuo pipefail
+
+if [[ ${1:-} != --check || $# -ne 1 ]]; then
+    echo "usage: jenkins-update --check" >&2
+    exit 2
+fi
+
+source_record=/usr/local/share/turnkey-jenkins/source
+keyring=/usr/share/keyrings/jenkins-keyring.asc
+
+# shellcheck disable=SC1090
+. "$source_record"
+
+installed=$(dpkg-query -W -f='${Version}' jenkins)
+candidate=$(apt-cache policy jenkins |
+    awk '/Candidate:/ && !found { print $2; found = 1 }')
+fingerprint=$(gpg --show-keys --with-colons "$keyring" |
+    awk -F: '$1 == "fpr" && !found { print $10; found = 1 }')
+running_java=$(java -version 2>&1 |
+    sed -n '1s/.*version "\([0-9]*\).*/\1/p')
+
+test "$installed" = "$installed_version"
+test "$fingerprint" = "$repository_key_fingerprint"
+test "$running_java" = "$java_major"
+test "$candidate" != "(none)"
+grep -Fq 'https://pkg.jenkins.io/debian-stable binary/' \
+    /etc/apt/sources.list.d/jenkins.list
+
+if dpkg --compare-versions "$candidate" eq "$installed"; then
+    status=up-to-date
+else
+    status=supervised-upgrade-available
+fi
+
+cat <<EOF
+installed=$installed
+candidate=$candidate
+channel=official-jenkins-lts-debian
+status=$status
+java=$running_java
+integrity=APT-signed-by-$fingerprint
+EOF

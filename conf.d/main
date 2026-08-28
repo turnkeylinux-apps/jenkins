@@ -2,13 +2,26 @@
 
 NAME="jenkins"
 DOMAIN="$NAME.io"
-URL="https://pkg.$DOMAIN/debian"
+URL="https://pkg.$DOMAIN/debian-stable"
+VERSION=2.568.2
+PACKAGE_SHA256=abaa015c3a39a8182eed136333d6d0ba055564df37584e699cc9693ad64ad7d5
+KEY_URL="$URL/jenkins.io-2026.key"
+KEY_SHA256=d3b7e4096fed593eebdba3a2554c8cb9aafebe736910584e69e924b143e7b3d4
+KEY_FINGERPRINT=5E386EADB55F01504CAE8BCF7198F4B714ABFC68
+SOURCE_RECORD=/usr/local/share/turnkey-jenkins/source
+PLUGIN_UPDATE_CENTER=https://mirror.freedif.org/jenkins/updates/dynamic-stable-2.568.2/update-center.actual.json
+CANONICAL_UPDATE_CENTER=https://updates.jenkins.io/update-center.json
 
 USER=admin
 PASS=turnkey
 
 mkdir -p /usr/share/keyrings
-wget -q -O /usr/share/keyrings/jenkins-keyring.asc "$URL/jenkins.io-2023.key"
+key=$(mktemp)
+trap 'find "$key" -maxdepth 0 -type f -delete' EXIT
+curl -fsSL "$KEY_URL" -o "$key"
+echo "$KEY_SHA256  $key" | sha256sum -c -
+test "$(gpg --show-keys --with-colons "$key" | awk -F: '$1 == "fpr" { print $10; exit }')" = "$KEY_FINGERPRINT"
+install -m 0644 "$key" /usr/share/keyrings/jenkins-keyring.asc
 
 cat >/etc/apt/sources.list.d/$NAME.list<<EOF
 deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] $URL binary/
@@ -25,7 +38,36 @@ Pin-Priority: 500
 EOF
 
 apt-get -y update
-DEBIAN_FRONTEND=noninteractive apt-get -y install "$NAME"
+DEBIAN_FRONTEND=noninteractive apt-get -y install "$NAME=$VERSION"
+test "$(dpkg-query -W -f='${Version}' jenkins)" = "$VERSION"
+
+mkdir -p "$(dirname "$SOURCE_RECORD")"
+cat >"$SOURCE_RECORD" <<EOF
+package_source=https://pkg.jenkins.io/debian-stable
+installed_version=$VERSION
+package_sha256=$PACKAGE_SHA256
+repository_key_fingerprint=$KEY_FINGERPRINT
+repository_key_sha256=$KEY_SHA256
+java_major=21
+EOF
+
+install -d -m 0755 /etc/systemd/system/jenkins.service.d
+cat >/etc/systemd/system/jenkins.service.d/timeout.conf <<'EOF'
+[Service]
+Environment="JAVA_OPTS=-Djava.awt.headless=true -Dsun.net.client.defaultConnectTimeout=15000 -Dsun.net.client.defaultReadTimeout=30000"
+EOF
+
+cat >/var/lib/jenkins/hudson.model.UpdateCenter.xml <<EOF
+<?xml version='1.1' encoding='UTF-8'?>
+<sites>
+  <site>
+    <id>default</id>
+    <url>$PLUGIN_UPDATE_CENTER</url>
+  </site>
+</sites>
+EOF
+chown jenkins:jenkins /var/lib/jenkins/hudson.model.UpdateCenter.xml
+systemctl daemon-reload
 
 a2enmod proxy
 a2enmod proxy_http
@@ -42,14 +84,16 @@ service jenkins start
 CLI_PATH=/usr/local/share/jenkins/jenkins-cli.jar
 mkdir -p "$(dirname "$CLI_PATH")"
 
-while ! file "$CLI_PATH" | grep -q JAR; do
-    curl -k -o "$CLI_PATH" 'https://127.0.0.1/jnlpJars/jenkins-cli.jar'
+for ((attempt = 1; attempt <= 120; attempt++)); do
+    curl -fk -o "$CLI_PATH" 'https://127.0.0.1/jnlpJars/jenkins-cli.jar' &&
+        jar --list --file "$CLI_PATH" >/dev/null 2>&1 && break
     sleep 3
 done
+jar --list --file "$CLI_PATH" >/dev/null
 
 cat > /usr/local/bin/jenkins-cli <<EOF
 #!/bin/sh
-exec java -jar $CLI_PATH \$@
+exec java -jar $CLI_PATH "\$@"
 EOF
 
 chmod +x /usr/local/bin/jenkins-cli
@@ -63,6 +107,7 @@ chmod +x /root/.bashrc.d/jenkins
 . /root/.bashrc.d/jenkins
 
 COOKIES="$(mktemp)"
+set +x
 PASSWORD="$(cat /var/lib/jenkins/secrets/initialAdminPassword)"
 
 jcurl() { curl -sb "$COOKIES" -c "$COOKIES" -u "admin:$PASSWORD" "$@"; }
@@ -76,6 +121,42 @@ jpost \
     --data-urlencode "password2=$PASS" \
     --data-urlencode "email=admin@example.com" \
     "$JENKINS_URL/setupWizard/createAdminUser"
+jpost --data-urlencode "rootUrl=$JENKINS_URL" "$JENKINS_URL/setupWizard/configureInstance"
+
+jenkins-cli -auth "$USER:$PASS" groovy = <<'EOF'
+import hudson.model.DownloadService
+import hudson.model.UpdateCenter
+import hudson.util.FormValidation
+import jenkins.model.Jenkins
+
+if (!DownloadService.signatureCheck) {
+    throw new IllegalStateException('Jenkins update-center signature checks are disabled')
+}
+def site = Jenkins.get().updateCenter.getSite(UpdateCenter.ID_DEFAULT)
+if (site == null) {
+    throw new IllegalStateException('Jenkins default update center is unavailable')
+}
+def result = site.updateDirectlyNow()
+if (result.kind != FormValidation.Kind.OK ||
+        site.getPlugin('workflow-support') == null) {
+    throw new IllegalStateException('Jenkins update-center metadata is unavailable')
+}
+
+def requested = [
+    'workflow-support', 'jsch', 'scm-api', 'structs', 'git', 'subversion',
+    'workflow-scm-step', 'credentials', 'git-client', 'ssh-credentials',
+    'matrix-project', 'junit', 'script-security', 'mailer',
+    'command-launcher', 'jdk-tool', 'jaxb', 'credentials-binding'
+]
+def unsigned = requested.findAll { name ->
+    def plugin = site.getPlugin(name)
+    plugin == null || plugin.sha256 == null || plugin.sha256.isEmpty()
+}
+if (!unsigned.isEmpty()) {
+    throw new IllegalStateException(
+            "Jenkins plugins lack SHA-256 metadata: ${unsigned.join(', ')}")
+}
+EOF
 
 PLUGINS="
     workflow-support
@@ -83,6 +164,7 @@ PLUGINS="
     scm-api
     structs
     git
+    subversion
     workflow-scm-step
     credentials
     git-client
@@ -98,10 +180,32 @@ PLUGINS="
 "
 
 for plugin in $PLUGINS; do jenkins-cli -auth "$USER:$PASS" install-plugin "$plugin"; done
-jpost --data-urlencode "rootUrl=$JENKINS_URL" "$JENKINS_URL/setupWizard/configureInstance"
+
+jenkins-cli -auth "$USER:$PASS" groovy = <<'EOF'
+import hudson.model.UpdateCenter
+import hudson.model.UpdateSite
+import jenkins.model.Jenkins
+
+def sites = Jenkins.get().updateCenter.sites
+sites.clear()
+sites.add(new UpdateSite(UpdateCenter.ID_DEFAULT,
+        'https://updates.jenkins.io/update-center.json'))
+if (Jenkins.get().updateCenter.getSite(UpdateCenter.ID_DEFAULT).url !=
+        'https://updates.jenkins.io/update-center.json') {
+    throw new IllegalStateException('Canonical Jenkins update center was not restored')
+}
+EOF
 
 service apache2 stop
 jenkins-cli -auth "$USER:$PASS" shutdown
+set -x
+
+grep -Fq "<url>$CANONICAL_UPDATE_CENTER</url>" \
+    /var/lib/jenkins/hudson.model.UpdateCenter.xml
+find /etc/systemd/system/jenkins.service.d/timeout.conf \
+    -maxdepth 0 -type f -delete
+systemctl daemon-reload
+test ! -e /etc/systemd/system/jenkins.service.d/timeout.conf
 
 sed -i 's/^#\(LimitNOFILE\)/\1/' /etc/systemd/system/multi-user.target.wants/jenkins.service
-rm "$COOKIES"
+find "$COOKIES" -maxdepth 0 -type f -delete

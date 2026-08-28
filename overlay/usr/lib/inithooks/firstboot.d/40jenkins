@@ -3,5 +3,5 @@
 
 . /etc/default/inithooks
 
-[ -e $INITHOOKS_CONF ] && . $INITHOOKS_CONF
-$INITHOOKS_PATH/bin/jenkins.py --pass="$APP_PASS"
+[[ -e $INITHOOKS_CONF ]] && . "$INITHOOKS_CONF"
+APP_PASS="$APP_PASS" "$INITHOOKS_PATH/bin/jenkins.py"

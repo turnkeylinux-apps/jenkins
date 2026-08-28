@@ -5,20 +5,21 @@ Option:
     --pass=     unless provided, will ask interactively
 """
 
-import sys
 import getopt
-import string
+import os
 import subprocess
+import sys
 
-from libinithooks import inithooks_cache
 from libinithooks.dialog_wrapper import Dialog
+
 
 def usage(s=None):
     if s:
-        print("Error:", s, file=sys.stderr, **kwargs)
+        print("Error:", s, file=sys.stderr)
     print("Syntax: %s [options]" % sys.argv[0], file=sys.stderr)
     print(__doc__, file=sys.stderr)
     sys.exit(1)
+
 
 def main():
     try:
@@ -26,7 +27,7 @@ def main():
     except getopt.GetoptError as e:
         usage(e)
 
-    password = ""
+    password = os.environ.pop("APP_PASS", "")
 
     for opt, val in opts:
         if opt in ('-h', '--help'):
@@ -40,7 +41,12 @@ def main():
             "Jenkins Password",
             "Enter new password for the Jenkins 'admin' account.")
 
-    subprocess.run(["/usr/lib/inithooks/bin/jenkins_password.sh", password])
+    subprocess.run(
+        ["/usr/lib/inithooks/bin/jenkins_password.sh"],
+        input=f"{password}\n",
+        text=True,
+        check=True,
+    )
 
 if __name__ == "__main__":
     main()
